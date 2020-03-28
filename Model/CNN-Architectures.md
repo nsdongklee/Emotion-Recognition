@@ -42,7 +42,7 @@
 
 > LeNet은 CNN 알고리즘을 최초로 개발한 Yann Lecun에 의해 만들어졌다. 원래 우편번호와 수표의 필기체를 인식하기 위한 용도로 개발을 했다.
 
-
+<br></br>
 
 기존 Fully-Connected Neural Network는 좋은 알고리즘이지만 Topology 변화에 대응이 어려운 단점을 가지고 있었다. 
 
@@ -56,6 +56,8 @@
   - 2단계 : 12개의 featur map
   - 전체적으로 각 feature map 추출 마다 반으로 Pooling 과정을 거쳐 크기를 줄이며 추출된 최종 특성을 DNN과 연결했다.
   - free parameter의 개수는 3,000개 이하이다.
+
+<br></br>
 
 - LeNet-5 :
 
@@ -119,23 +121,86 @@
 
   - LeNet-5이 훈련해야할 파라미터는 총 156 + 12 + 1516 + 32 + 48120 + 10164 = **60000개**
 
-  
+<br></br>
 
+## AlexNet
 
+> 2012년 ImageNet ILSVRC 대회에서 2위와 큰 성능차(AlexNet 16% , 2위 26%)로 우승한 것으로 유명하다.
 
+<p align='center'><img src='https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F99FEB93C5C80B5192E'></p>
 
+> Alex-Net의 아키텍처. LeNet과 유사하지만, 보통 Conv-Layer 다음 Pooling 과정을 진행하는 기본 방식과 달리 Conv-Layer 바로 다음 Conv-Layer가 온 점이 다르다.
 
+<br></br>
 
+- Input : 224x224x3 의 RGB 이미지
+- 8개의 Layer(Convolutional-Layer 5개, Fully-Connected Layer 3개)
+- 3번째 Conv-Layer는 이전 두 단계의 특성 맵들과 모두 연결되어 있다.
 
+<br></br>
 
+### Layers
 
+- `1번 째 (Conv-layer)` : 
+  - 96개의 11x11x3 사이즈의 필터 커널, Stride==4, Zero padding==False(사용X)
+  - 96장의 55 x 55 사이즈 특성맵들이 산출된다.(55 x 55 x 96)
+  - 그 다음에 **ReLU** 함수로 활성화해준다.
+  - 3x3 overlapping **max pooling**이 **stride 2**로 시행하며, 그 결과로  27 x 27 x 96 특성맵을 가진다.
+  - 그 다음에는 수렴 속도를 높이기 위해 **local response normalization**이 시행된다.(특성맵 크기는 유지된다.)
+- `2번 째 (Conv-layer)` : 
+  - 256개의 5x5x48 필터 커널, Stride == 1, Zero padding == 2
+  - 256장의 27 x 27 사이즈 특성맵들이 산출된다.(27 x 27 x 256)
+  - 그 다음에 **ReLU** 함수로 활성화해준다.
+  - 3x3 overlapping **max pooling**이 **stride 2**로 시행하며, 그 결과로  13 x 13 x 256 특성맵을 가진다.
+  - 그 다음에는 수렴 속도를 높이기 위해 **local response normalization**이 시행된다.(특성맵 크기는 유지된다.)
+- `3번 째 (Conv-layer)` : 
+  - 384개의 3x3x256 필터 커널, Stride == 1, Zero padding == 1
+  - 384장의 13 x 13 사이즈 특성맵들이 산출된다.(13 x 13 x 384)
+  - 그 다음에 **ReLU** 함수로 활성화해준다.
+- `4번 째 (Conv-layer)` : 
+  - 384개의 3x3x192 필터 커널, Stride == 1, Zero padding == 1
+  - 384장의 13 x 13 사이즈 특성맵들이 산출된다.(13 x 13 x 384)
+  - 그 다음에 **ReLU** 함수로 활성화해준다.
+- `5번 째 (Conv-layer)` :
+  - 256개의 3x3x192필터 커널, Stride == 1, Zero padding == 1
+  - 256장의 13 x 13 사이즈 특성맵들이 산출된다.(13 x 13 x 256)
+  - 그 다음에 **ReLU** 함수로 활성화해준다.
+  - 3x3 overlapping **max pooling**이 **stride 2**로 시행하며, 그 결과로  6 x 6 x 256 특성맵을 가진다.
+- `6번 째 (F.C-layer)` :
+  - Conv-layer의 마지막 층인 5번째 층의 Output인 6x6x256 특성맵을 **Flatten**한다.(딥러닝이 이해할 수 있는 벡터 형태로 변경하는 단계)
+  - **4096**개의 노드 및 **ReLU** 함수
+- `7번 째 (F.C-layer)` :
+  - **4096**개의 노드 및 **ReLU** 함수
+- `8번 째 (F.C-layer)` :
+  - **1000**개의 노드 및 **Softmax** 함수를 통해 1000개의 클래스 분류
 
+<br></br>
 
+### Additional explanation
 
+1. ReLU 활성화 함수 :
 
+   ![img](https://k.kakaocdn.net/dn/cexrVz/btqBFwoUz96/6E1W6ALGpm3EfkJykHPFak/img.jpg)
 
+   LeNet-5는 Tanh 함수를 사용했으나, AlexNet은 ReLU 함수가 사용되었다. 정확도는 비슷한 수준이나 6배나 연산속도가 빨라진다고 한다. 
 
+2. Dropout : 
 
+   <img src="https://k.kakaocdn.net/dn/cMcWkE/btqBFNcRhiv/jJyZWvbf9uQLmKJG3pQAK1/img.jpg" alt="img" style="zoom:67%;" />
+
+   과적합(over-fitting)을 막기 위해서 규제 기술의 일종이다.  몇몇 뉴런의 값을 0으로 바꾸어 뉴런 중 일부를 생략하면서 학습을 진행하는 것이다. Training 과정에만 적용되며, 테스트시에는 모든 뉴런을 사용한다. 
+
+3. Overlapping Pooling : 
+
+   Pooling은 샘플링이라고도 하는데 Feature map(특성 맵)의 크기를 줄이기 위한 목적으로 활용된다. LeNet-5의 경우 average pooling이 사용된 반면, AlexNet에서는 max pooling이 사용되었다.
+
+   <img src="https://k.kakaocdn.net/dn/b5hfOx/btqBCUY3kpE/CKcK19bmDgtkSkWS5GPkBk/img.png" alt="img" style="zoom:50%;" />
+
+   > overlapping 풀링을 하면 풀링 커널이 중첩되면서 지나가는 반면, non-overlapping 풀링을 하면 중첩없이 진행된다. 
+
+4. Local response normalization : 
+
+   신경생물학에는 `lateral inhibition`이라고 불리는 개념이 있다. 활성화된 뉴런이 주변 이웃 뉴런들을 억누르는 현상을 의미한다. lateral inhibition 현상을 모델링한 것이 바로 **local response normalization**이다. 강하게 활성화된 뉴런의 주변 이웃들에 대해서 normalization을 실행한다. 주변에 비해 어떤 뉴런이 비교적 강하게 활성화되어 있다면, 그 뉴런의 반응은 더욱더 돋보이게 될 것이다. 반면 강하게 활성화된 뉴런 주변도 모두 강하게 활성화되어 있다면, local response normalization 이후에는 모두 값이 작아질 것이다. (https://bskyvision.com/421?category=635506 참고)
 
 
 
