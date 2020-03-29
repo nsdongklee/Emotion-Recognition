@@ -56,4 +56,19 @@ checkpoint = ModelCheckpoint("vgg16_1.h5", monitor='val_acc', verbose=1, save_be
 early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 hist = model.fit(steps_per_epoch=10,generator=traindata, validation_data= testdata, validation_steps=10,epochs=10,callbacks=[checkpoint,early])
 
+# 6. 테스트 해보기(predict)
+from keras.preprocessing import image
+img = image.load_img("주소.jpg",target_size=(224,224))
+img = np.asarray(img)
+plt.imshow(img)
+img = np.expand_dims(img, axis=0)
+
+from keras.models import load_model
+saved_model = load_model("vgg16_1.h5")
+output = saved_model.predict(img)
+if output[0][0] > output[0][1]:
+    print("cat")
+else:
+    print('dog')
+    
 # 출처 : (https://medium.com/@subham.tiwari186)
