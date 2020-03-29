@@ -284,11 +284,131 @@ CNN이 SIFT 등의 기존 특징 검출 알고리즘과 다른 점은 컨볼루�
 
 VGGNet은 GoogLeNet과 함께 2014년 ILSVRC 대회에서 주목을 받은 아키텍처이다. GoogLeNet보다 근소한 차이로 성능은 떨어지나, 구조적인 측면에서 훨씬 간단한 구조로 되어있어 이해하기 쉬우며 변형하기 쉬워 훨씬 많이 사용된다고 한다.
 
-VGG 연구팀은 깊이가 어떤 영향을 주는지 밝히기 위해 다음과 같은 실험을 했다.
+VGG 연구팀은 깊이가 어떤 영향을 주는지 밝히기 위해 가장 간단한 3x3 크기의 사이즈로 정하고 6개의 구조에 대해 실험한다.
 
+![ImageNet: VGGNet, ResNet, Inception, and Xception with Keras ...](https://pyimagesearch.com/wp-content/uploads/2017/03/imagenet_vggnet_table1.png)
 
+> 위 구조는 VGG 개발팀이 실험했던 구조에 대한 표이다.
 
+AlexNet이나 ZfNet 처럼 224x224 사이즈의 RGB 컬러 이미지를 Input data로 활용했다. GoogLeNet 저자의 지적처럼 VGGNet의 단점은 Layer가 적음에도 불구하고 파라미터가 많다는 점이다. 그 이유는 마지막에 DNN 층 때문이다.
 
+<br>
+
+### Codes of VGG-16
+
+```python
+model = Sequential()
+model.add(Conv2D(input_shape=(224,224,3),filters=64,kernel_size=(3,3),padding="same", activation="relu"))
+model.add(Conv2D(filters=64,kernel_size=(3,3),padding="same", activation="relu"))
+model.add(MaxPool2D(pool_size=(2,2),strides=(2,2)))
+model.add(Conv2D(filters=128, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=128, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(MaxPool2D(pool_size=(2,2),strides=(2,2)))
+model.add(Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=256, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(MaxPool2D(pool_size=(2,2),strides=(2,2)))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(MaxPool2D(pool_size=(2,2),strides=(2,2)))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(Conv2D(filters=512, kernel_size=(3,3), padding="same", activation="relu"))
+model.add(MaxPool2D(pool_size=(2,2),strides=(2,2)))
+model.add(Flatten())
+model.add(Dense(units=4096,activation="relu"))
+model.add(Dense(units=4096,activation="relu"))
+model.add(Dense(units=2, activation="softmax"))
+```
+
+> VGG의 모델을 Keras로 보았을 때 마지막에 엄청나게 많은 노드가 투입되는 것을 볼 수 있다. 때문에 연산량이 급격하게 늘어난다.
+
+VGGNet 팀은 망의 깊이에 따른 영향을 연구했고, 위에 코드 처럼 3x3의 conv-layer를 겹쳐서 사용했으며, ILSVRC-2012 데이터에 대해 16개의 층보다 많아지면 큰 소득을 얻지 못했다는 것을 논문으로 발표했다. 결국 VGG의 핵심은 3x3 Convolution layer 라는 단순한 구조로 부터 부터 성능을 끌어내는 것이다.
+
+<img src="https://miro.medium.com/max/857/1*AqqArOvacibWqeulyP_-8Q.png" style="zoom:67%;" />
+
+> 위 코드를 그림으로 나타내면 다음과 같다. 전체적인 특징으로는 Conv-layer와 pooling을 바로 붙이지 않고 Conv-layer를 여러개 쌓고 pooling하는 과정을 거친 것이다.
+
+<br>
+
+### VGG 아키텍처의 Training 방법
+
+- AlexNet은 모든 학습 이미지를 256x256 크기로 만든 후, 거기서 무작위로 224x224 크기의 이미지를 추출하는 방식으로 데이터 크기를 2048배 늘리고, RGB컬러를 주성분 분석(PCA)를 통해 RGB 데이터를 조작하는 방식도 사용했다. 
+- VGGNet은 모든 이미지를 Training Scale을 'S'로 표시하고, single-scale training과 multi-scale-traing을 지원한다. 
+  - single scale : S==256, S==384 
+  - multi scale : `Smin`(256) to `Smax`(512)
+
+### VGG 아키텍처의 Test 방법
+
+- AlexNet은 Test데이터를 256x256 사이즈로 변경하고, 그 데이터를 상하좌우 및 중앙에 맞추어 224x224 크기의 데이터로 재변경했다. 좌우 반전까지 하나의 데이터마다 10개로 나누어 테스트 셋을 만들었다. 이 테스트 셋을 모두 실험하고 10개의 평균을 가져가는 방식으로 했다.(softmax의 결과로 나오는 숫자를 평균함)
+
+- Q 라고 부르는 test scale을 사용하며, 테스트 영상을 미리 정한 크기 Q로 크기 조절을 한다. Qs는 트레이닝 사이즈와 같을 필요가 없지만, 각각의 S에 대해 Q를 학습하면 결과는 좋아진다.
+- Multi-crop(150장) 방식으로 테스트 하는 방법도 있었지만, 연산량을 줄이기 위해 `Dense -Evaluation` 개념을 적용했다. 
+- `Dense -Evaluation` : 데이터를 자르고 각각 layers에 적용하는 것이 아니라 큰 데이터에 바로 적용하여 일정한 픽셀 간격으로 결과를 끌어낼 수 있다.
+
+<br>
+
+## GoogLeNet
+
+> GoogLeNet의 핵심은 망을 깊게 형성하면서, 파라미터를 줄이기 위해 Inception이라는 독특한 구조를 만들며, 깊어지는 망의 학습을 돕기 위해 auxiliary classifier 개념을 만들었다.
+
+<img src="https://k.kakaocdn.net/dn/14Um2/btqyQ5nKlEA/hjSsZaYiBukseySytXWFCK/img.png" alt="img" style="zoom: 80%;" />
+
+> GoogLeNet의 전체 아키텍처는 아니지만, 이 아키텍처의 핵심인 인셉션 모듈에 대한 설명이다. 위 모델은 초기 모델, 아래 모델은 발전시킨 모델이다.
+
+### What is Inception in GoogLeNet?
+
+![img](https://k.kakaocdn.net/dn/bHZHKC/btqyQ5aekdF/3rkScmoIxS4P4fia96lQwk/img.png)
+
+> GoogLeNet은 9개의 인셉션 모듈을 포함한다.
+
+GoogLeNet에 실제로 사용된 모델은 상단의 (b) 와같이 1x1 Convolution(노란색 블럭)이 포함된 모델이다. 이 방식은 다양한 종류의 특성을 도출할 수 있고 연산량을 줄일 수 있다.(이전 모델은 동일한 필터 커널로 컨볼루션 연산을 했기 때문에)
+
+<br>
+
+### GoogLeNet의 구조
+
+우선, **22개의 층**으로 구성되어 있다. CNN 알고리즘이 발전하면서 층을 깊게 만드는 경향을 보인다. 하지만 여기에는 연산해야 할 **파라미터가 급격하게 증가**하고, 모델이 데이터에 **과적합** 될 수 있는 문제가 발생할 가능성이 높아지는 **두 가지 문제점**이 있다.
+
+여기서 GoogLeNet은 앞에서 먼저 정리 해놓은 `Inception` 이라는 구조(그 중에서도 특히 1x1 컨볼루션 필터)를 통해서 feature map의 갯수를 줄여 연산해야 할 파라미터를 줄이고, 서로 다른 사이즈에서 특성을 추출해 낼 수 있도록 했다.
+
+![img](https://k.kakaocdn.net/dn/MzPze/btqyQy5e3NM/5HPtmAwVQzKJTj6wgWautk/img.png)
+
+<br>
+
+### Global average pooling
+
+<img src="https://k.kakaocdn.net/dn/bwTHh0/btqB2uyArWI/qBr48Ik8bl4bK1oOEJa3bk/img.png" alt="img" style="zoom: 67%;" />
+
+이전 모델들은 DNN layers 가 모델의 후반부에 있다. 하지만 GoogLeNet은 DNN 방식 대신 Global average pooling 방식을 채택했다. 이 방식은 이전 층에서 산출된 feature map을 각각 평균내어서 1차원 벡터로 만들어 주어 최종적으로 Softmax 활성화 함수를 통해 분류 할 수 있도록 연결해 줄 수 있다. 
+
+왼쪽은 (7x7x1024) 사이즈의 모델이 Flatten 되면서 (1x1x50176)의 벡터 모델이 된 것을 볼 수 있다. 반면에 오른쪽은 (1x1x1024) 사이즈가 되었다. 이로써 가중치의 개수를 많이 없애준다. 왜냐면 이 방식을 사용하면 가중치가 필요하지 않기 때문이다.
+
+<br>
+
+### auxiliary classifier
+
+네트워크의 깊어질수록 Gradient Vanishing(값 소멸, 가중치 업데이트 중 기울기가 0에 수렴하는 상황) 문제가 발생하기 쉽다.
+
+이 문제를 극복하기 위해 네트워크 중간에 두 개의 **보조 분류기(auxiliary classifier)**를 달아주었다.
+
+![img](https://k.kakaocdn.net/dn/bD5poT/btqyQM98EkX/nbxasUSmCO1WnaIyIsvUD0/img.png)
+
+> 5x5 average pooling(stride 3), 128개의 (1x1) filter, 1024개의 노드 DNN, 1000개의 노드 DNN, Softmax 분류 순서로 되어있으며, 필요시에만 ON 한다.
+
+<br>
+
+### GoogLeNet 아키텍처의 Training 방법
+
+- GoogLeNet은 영상의 가로-세로의 비율을 (3/4, 4/3)을 유지하면서 원본 영상의 8%부터 100% 까지 포함할 수 있도록 다양한 크기의 Patch를 학습에 사용했다. 또한, Photometric distortion을 통해 학습 데이터를 늘렸다. 
+- multi scale training 방법을 사용하며 컬러 이미지 변경 방식 또한 VGG와 유사하다.
+
+### GoogLeNet 아키텍처의 Test 방법
+
+- 방식 또한 VGG와 유사하다.
+
+<br>
 
 ## References
 
