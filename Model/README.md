@@ -203,6 +203,91 @@
 
    신경생물학에는 `lateral inhibition`이라고 불리는 개념이 있다. 활성화된 뉴런이 주변 이웃 뉴런들을 억누르는 현상을 의미한다. lateral inhibition 현상을 모델링한 것이 바로 **local response normalization**이다. 강하게 활성화된 뉴런의 주변 이웃들에 대해서 normalization을 실행한다. 주변에 비해 어떤 뉴런이 비교적 강하게 활성화되어 있다면, 그 뉴런의 반응은 더욱더 돋보이게 될 것이다. 반면 강하게 활성화된 뉴런 주변도 모두 강하게 활성화되어 있다면, local response normalization 이후에는 모두 값이 작아질 것이다. (https://bskyvision.com/421?category=635506 참고)
 
+<br>
+
+## ZfNet
+
+> AlexNet으로 주목할 만한 성과를 얻어 냈지만 전체적인 구조가 어떤 원리로 좋은 결과를 낼 수 있는지, CNN 알고리즘의 Hyper-parameter를 어떻게 설정할지 판단하는 것은 어려운 일이다.
+>
+> 여기서, Matthew Zeiler는 `Visualizing 기법`을 통해 해결하려는 시도를 했다.
+
+<br>
+
+<p align='center'>"ZfNet은 특정구조를 말하는 개념이 아니라, CNN을 보다 잘 이해하는 기법이다."</p>
+
+### De-convolution을 이용한 Visualization
+
+CNN은 보통 `INPUT - Filter(FeatureMap) - 활성화함수- Pooling(Sampling)`  과정을 거친다. 
+
+여기서, `특정 Feature`의 `Activity`가 입력 이미지에서 어떻게 `Mapping` 되는지 이해하기위해 역으로 수행하는 것이다.
+
+다만 MaxPooling을 한 상태에서 역으로 하려면 어떤 위치에 있는 신호 였는지 파악할 수 없기 때문에 ZfNet 개발팀은 `Switch`라는 일종의 꼬리표(flag) 라는 개념을 만들었다.
+
+이렇게 De-convolution을 수행하면, 정확하게 입력과 같은 상태로 `Mapping` 되는 것은 아니지만 강한 특성(feature)이 어떻게 Mapping되고 있는 지 확인할 수 있어 최적의 구조를 만드는데 참고할 수 있다.
+
+<p align='center'><img src='https://miro.medium.com/max/1528/1*aph2aB6IcCuMft1-MLqtqQ.png'alt="img" style="zoom:67%;" /></p>
+
+<br>
+
+### Feature Visualization
+
+각 단계에서 Feature Map에서 상위 9개의 활성화된 패턴만 보여주고, 그 9개의 Feature에 대해 원본영상을 같이 쌍으로 보여준다.
+
+CNN이 SIFT 등의 기존 특징 검출 알고리즘과 다른 점은 컨볼루션 연산과 샘플링 과정을 거치면서 mid/high level feature(단순 경계검출만 아닌 전체 오브젝트 등을 가리킴)를 이용한다는 것이다. 하지만 하이퍼 파라미터를 최적으로 만들기 쉽지 않기 때문에 `Feature Visualization` 이 중요하다.
+
+1. Layer-1 , 2
+
+   ![img](https://miro.medium.com/max/1064/1*WbyE9tqJt8Kd0vqNX9MeVQ.png)
+
+   De-conv 기술을 사용해서 무작위로 선택된 Feature Map에서 상위 9개의 활성화된 패턴이 각 Layer에 대해 표시된다.
+
+   - Layer-1의 필터들은 가장 자주보이는 패턴과 거의 없는 패턴들의 조합이다. 이렇게 하면 `연쇄반응(Chain-Effect)` 이라는 것이 발생한다고 한다.
+   - Layer-2는 Stride를 4로 설정하여 보폭이 너무 커서 앨리어싱 아티팩트가 발생된다.
+
+2. Layer-3
+
+   ![img](https://miro.medium.com/max/1011/1*hpm0NDbqDDTYHHY_7OOPfQ.png)
+
+   이전 레이어(Layer1,2)에 비해 조금 더 상위수준의 항상성(Invariance)를 얻을 수 있거나 비슷한 외양(Texture)를 갖고 있는 특징을 추출할 수 있다.
+
+3. Layer-4, 5
+
+   ![img](https://miro.medium.com/max/1006/1*69ty1ZX7OoScp7oXhqbs_A.png)
+
+   - Layer-4는 사물이나 개체의 일부분을 볼 수 있다. 왼쪽 상단 개의 얼굴 이나 우측 하단의 새 다리 처럼 특징을 볼 수 있다. 
+   - Layer-5는 위치나 자세, 변화 등까지 포함한 사물이나 개체의 전부를 보여준다.
+
+
+
+### Modifications of AlexNet Based on Visualization Results
+
+![img](https://miro.medium.com/max/1165/1*bFjBVvUL2Po_p2mKzC4iYQ.png)
+
+> ZfNet은 Alexnet과 같은 스타일을 유지한다.  하지만 Layer-1과 2의 문제점을 개선하기 위해, ZfNet은 두가지 변화를 주었다.
+
+1. Layer-1의 필터 사이즈를 11x11 에서 7x7로 줄였다.
+2. Layer-1의 stride를 4에서 2로 변경했다.
+
+![img](https://miro.medium.com/max/674/1*YTd-watnbNQA-vArfqS_AQ.png)
+
+> Layer 2: (c) Aliasing artifacts in AlexNet and (d) much cleaner features in ZFNet
+
+<br>
+
+## VGG16
+
+> VGG16은 총 16개의 Layers로 , 13개의 Conv-layer와 5개의 Max Pooling layer와 3개의 DNN layer로 이루어진 아키텍처이다.
+
+![img](https://miro.medium.com/max/1500/1*Vz5n812l-J37a5wLxKbD8A.png)
+
+> VGG16의 아키텍처이다. 
+
+VGGNet은 GoogLeNet과 함께 2014년 ILSVRC 대회에서 주목을 받은 아키텍처이다. GoogLeNet보다 근소한 차이로 성능은 떨어지나, 구조적인 측면에서 훨씬 간단한 구조로 되어있어 이해하기 쉬우며 변형하기 쉬워 훨씬 많이 사용된다고 한다.
+
+VGG 연구팀은 깊이가 어떤 영향을 주는지 밝히기 위해 다음과 같은 실험을 했다.
+
+
+
 
 
 ## References
