@@ -55,7 +55,7 @@ conv_base.summary()
 | **@WinterBlue16** | 이경희 | https://github.com/WinterBlue16 |
 |   **@kimjis92**   | 김지승 |   https://github.com/kimjis92   |
 
-## Requiremets
+## Requirements
 
 - **tensorflow**>=1.15.0
 - **keras**>=2.3.0
