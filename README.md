@@ -2,6 +2,10 @@
 
 > Deep Learning-Based Music Recommendation Service for Facial Emotion Recognition.
 
+<p align='center'><img src="https://file.namu.moe/file/2a47cedbf4c7883e668ac283729c6f98d7793cbe7bb8ea065347305e4d88210f" style="zoom:50%;"/></p>
+
+## Overview
+
 ### Music Lists for your mood
 
 Emotional recognition technology is a key technology for interaction between humans and computers. Based on accurate emotional recognition technology, it recommends music that anyone can relate to, and creates interest for users.
@@ -10,19 +14,37 @@ There are facial characteristics by emotion. We classify by this characteristic 
 
 The purpose of the project is to develop web pages and distribute them after beta testing.
 
-##  Datasets 
+### Our Goal
+
+- **Accuracy** 
+- **Creativity** 
+- **Research based** 
+
+## How do machine understand facial emotions
+
+*According to [Radboud Faces Database Paper](http://www.socsci.ru.nl/rafd/Langner_etal_2010_CEM.pdf),*
+
+<p align='center'><img src="C:\Users\bruce0809\OneDrive\바탕 화면\이미지 저장 폴더\캡처.JPG" alt="캡처" style="zoom:67%;" /></p>
+
+> 8 suggestions about displayed facial expression by Radboud Faces Database
+
+"Face processing may be one of the most complex tasks that human beings accomplish. Many research related to the processing of information contained in human faces have continued to develop. Specifically, a face database in which displayed expressions, gaze direction, and head orientation are parametrically varied in a complete factorial design would be highly useful in many research domains"
+
+This database also suggested that features that can be widely applied in different fields of research are facial expressions, gaze direction, head orientation, and reasonable number of data for men and women of all ages. For a total of 276 people, three different gaze direction, eight facial expressions and five head orientation were taken.
+
+##  Reasons why we use K-FACE datasets
 
 > K-Face we used is a database that fits the facial characteristics of Koreans developed by the NIA(National Information Society Agency).
 
 ### Architectures of K-FACE
 
-![Amount_of_the_data](https://github.com/k-face/k-face_2019/raw/master/image/Amount_of_the_data.png)
+<p><img src="https://github.com/k-face/k-face_2019/raw/master/image/Amount_of_the_data.png" alt="Amount_of_the_data" style="zoom:67%;" /></p>
 
 > K-Face: Korean Facial Image AI Training Dataset
 
 It is a Korean-style face database that fits the characteristics of Koreans' faces. The data is designed to identify the statistical characteristics of Korean faces. The K-FACE data has a total of 1,000 data. There are data equivalent to about 30,000 sheets per person, reflecting 20 different angles, 30 different luminance, 6 different accessories, 3 different facial expressions, and 3 different resolutions.
 
-## Model
+## CNN architectures with Transfer Learning
 
 > Experimented with the CNN architecture to select a model that fits the data that we adopted.
 
