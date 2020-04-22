@@ -2,8 +2,6 @@
 
 > Deep Learning-Based Music Recommendation Service for Facial Emotion Recognition.
 
-<p align='center'><img src="https://file.namu.moe/file/2a47cedbf4c7883e668ac283729c6f98d7793cbe7bb8ea065347305e4d88210f" style="zoom:50%;"/></p>
-
 ## Overview
 
 ### Music Lists for your mood
@@ -24,7 +22,7 @@ The purpose of the project is to develop web pages and distribute them after bet
 
 *According to [Radboud Faces Database Paper](http://www.socsci.ru.nl/rafd/Langner_etal_2010_CEM.pdf),*
 
-<p align='center'><img src="C:\Users\bruce0809\OneDrive\바탕 화면\이미지 저장 폴더\캡처.JPG" alt="캡처" style="zoom:67%;" /></p>
+<p align='center'><img src="https://github.com/dannylee93/Emotion-Recognition/blob/master/Images/Radboud_Faces_Database.JPG?raw=true" alt="캡처" style="zoom:67%;" /></p>
 
 > 8 suggestions about displayed facial expression by Radboud Faces Database
 
