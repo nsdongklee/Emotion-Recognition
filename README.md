@@ -70,8 +70,9 @@ conv_base.summary()
 ## Facial Emotion Detection
 
 <p align='center'>
-    <img src="C:\Users\bruce0809\Emotion-Recognition\Images\EmotionDetection.jpg">
+    <img src="https://github.com/dannylee93/Emotion-Recognition/blob/master/Images/EmotionDetection.jpg?raw=true">
 </p>
+
 We used Deep Learning technology and Haar Cascade of Open CV appropriately combined to detect emotions through facial images in image data.
 
 First, Made an emotional classification model of combination of K-FACE datasets and CNN architecture. And Saved as a file that weight generated through this model.
@@ -100,6 +101,10 @@ The first step is to calculate the Haar feature in the image. With a kernel of a
 - Haar feature consisting of 2 squares : 
 - Haar feature consisting of 3 squares : 
 - Haar feature consisting of 4 squares :  
+
+<p align='center'>
+    <img src="https://github.com/dannylee93/Emotion-Recognition/blob/master/Images/3_Features_Haar.jpg?raw=true">
+</p>
 
  #### (2) Creating Integral Images
 
