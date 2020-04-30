@@ -2,6 +2,8 @@
 
 > Deep Learning-Based Music Recommendation Service for Facial Emotion Recognition.
 
+<p align='center'><img src='https://i.pinimg.com/originals/c6/27/a2/c627a264744447f3bc0d0978bce1fc9c.png' style="zoom:67%;" /></p>
+
 ## Overview
 
 ### Music Lists for your mood
@@ -63,8 +65,55 @@ conv_base.add( VGG16(weights='imagenet',
 conv_base.add(Flatten())
 conv_base.add(Dense(num_classes, activation='softmax'))
 conv_base.summary()
-
 ```
+
+## Facial Emotion Detection
+
+<p align='center'>
+    <img src="C:\Users\bruce0809\Emotion-Recognition\Images\EmotionDetection.jpg">
+</p>
+We used Deep Learning technology and Haar Cascade of Open CV appropriately combined to detect emotions through facial images in image data.
+
+First, Made an emotional classification model of combination of K-FACE datasets and CNN architecture. And Saved as a file that weight generated through this model.
+
+Then, the frame generated on the web cam was used as input data by utilizing the weight file. In the process of data utilization, four coordinates around the face were selected through the "Haar Cascade.xml" file and readjusted to 150X150 size based on those four coordinates.
+
+Using the methods of Open CV on the frames predicted with this processed data, the results of the classification were displayed in square shapes and emotions.
+
+### Haar Cascades
+
+Haar Cascade is a machine learning-based feature detection algorithm. It is intended to detect objects in video or images based on features proposed by Paul Viola and Michael Jones in the paper "Rapid Object Detection Using a Boosted Cascade of Simple Features" published in 2001. Learn Haar Cascade Classifier using images that contain the object you are looking for and images that do not have the object.
+
+The algorithm consists of 4 steps.
+
+1. *Haar Feature Selection*
+2. *Creating Integral Images*
+3. *Adaboost Training*
+4. *Cascading Classifiers*
+
+ #### (1) Haar Feature Selection
+
+Haar feature, which is the subtraction in the pixel sum within the area of adjacent rectangles that move the position, while scanning the image. Use an integral image of `(2)` to add pixels inside the square area more quickly.
+
+The first step is to calculate the Haar feature in the image. With a kernel of any size possible, the entire image is scanned to calculate the Haar feature. For example, the use of a 24X24 kernel would result in more than 160,000 Haar features.
+
+- Haar feature consisting of 2 squares : 
+- Haar feature consisting of 3 squares : 
+- Haar feature consisting of 4 squares :  
+
+ #### (2) Creating Integral Images
+
+Explanations will be added soon.
+
+ #### (3) Adaboost Training
+
+Explanations will be added soon.
+
+ #### (4) Cascading Classifiers
+
+Explanations will be added soon.
+
+ #### 
 
 ## Team Members
 
