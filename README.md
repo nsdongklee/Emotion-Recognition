@@ -120,6 +120,60 @@ Explanations will be added soon.
 
  #### 
 
+## The Flow of Recommender System 
+
+The Recommender system is to provide users with contents that they find in the system a favor they didn't know they liked. In this Project, We would like to recommend musics for users by this recommender system. *[Show details](https://github.com/dannylee93/Emotion-Recognition/tree/master/Recommender-System)*
+
+<p align='center'><img src='https://miro.medium.com/max/1204/0*Lo2t0XnKPB2JN-_t'style="zoom:80%;" />
+</p>
+> The picture shows that the flow of recommender system.
+
+There are **TWO** main recommendations. *(1) Contents based filtering* and *(2) Collaborative filtering*. Collaborative filtering is divided into *Nearest Neighbor* and *Latent Factor*.
+
+### Two Matrices for Recommend
+
+We used a content-based filtering method to create a matrix of similarities between tags attached to each song. and also created a matrix by analyzing the relationship between each user's generated playlists and their preferences to the included songs.
+
+- Tag Similarity Matrix for Analysis of the mood of songs
+- User-item('R') matrix for affinity relationship analysis
+
+#### Matrix 1. Tag Similarity
+
+We extracted "The correlation" between TAGs from playlist datasets through `Word2Vec`
+
+| 태그\태그 | 여름 |  락  | 회상 | ...  |
+| :-------: | :--: | :--: | :--: | :--: |
+|   여름    |  1   | 0.92 | 0.49 | ...  |
+|    락     | 0.92 |  1   | 0.14 | ...  |
+|   회상    | 0.49 | 0.14 |  1   | ...  |
+|    ...    | ...  | ...  | ...  |  1   |
+
+> Example chart for TAG by TAG similarity matrix
+
+#### Matrix 2. User-item('R') matrix
+
+First of all, We assumed the number of likes of each playlist as preferences in the playlist data, and created a preference matrix between users and items through analysis of the latent factors with matrix factorization and ALS optimization.
+
+| 플레이리스트(id)\노래(id) | LA SONG |  깡  | 차에 타봐 | ...  |
+| :-----------------------: | :-----: | :--: | :-------: | :--: |
+|             1             |  0.24   | 0.92 |   0.74    | ...  |
+|             2             |  0.18   | 0.99 |   0.38    | ...  |
+|             3             |  0.24   | 0.14 |   0.11    | ...  |
+|            ...            |   ...   | ...  |    ...    | ...  |
+
+> Example chart for USER - ITEM affinity matrix
+
+### The Flow for Recommend
+
+*Using the above two matrices, simply summarized the method of recommending music.*
+
+Finds the **TOP N tags** most similar to the tag information in input data from **Matrix 1**.  and Finds a playlist that contains this extracted tag list. Create **TOP N recommended songs** for each playlist extracted from **Matrix 2**.
+
+*Randomly recommend songs from the list of candidates created.*
+
+- **Priority 1**: Select a group of music candidates that are most similar to songs in Input data through *Matrix 2* and recommend songs if it has a list of existing candidates.
+- **Priority 2** : Recommend the most frequently mentioned top song in the list of candidates
+
 ## Team Members
 
 |        ID         |  Name  |             Github              |
